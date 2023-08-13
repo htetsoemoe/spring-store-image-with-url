@@ -18,7 +18,7 @@ public class UploadImageUrlApplication implements CommandLineRunner{
 
 	public static void main(String[] args) {
 		final Path path = Paths.get("uploads");
-		System.out.println(path);
+		System.out.println(path);	
 		
 		SpringApplication.run(UploadImageUrlApplication.class, args);
 	}
