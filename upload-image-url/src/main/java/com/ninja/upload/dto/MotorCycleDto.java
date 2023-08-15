@@ -1,5 +1,7 @@
 package com.ninja.upload.dto;
 
+import com.ninja.upload.entity.MotorCycle;
+
 public class MotorCycleDto {
 	
 	private int id;
@@ -19,6 +21,12 @@ public class MotorCycleDto {
 		this.price = price;
 		this.image = url;
 		this.description = description;
+	}
+	
+	public MotorCycleDto(MotorCycle cycle) {
+		this.name = cycle.getName();
+		this.description = cycle.getDescription();
+		this.price = cycle.getPrice();
 	}
 
 	public int getId() {

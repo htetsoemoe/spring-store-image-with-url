@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -13,6 +14,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ninja.upload.dto.MotorCycleDto;
 import com.ninja.upload.entity.MotorCycle;
 import com.ninja.upload.repo.MotorCycleRepo;
 
@@ -67,5 +69,26 @@ public class FileStorageService {
 			throw new RuntimeException("Error: " + e.getMessage());
 		}
 	}
+	
+	// Update product services
+	public Optional<MotorCycle> updateSingleProduct(int id) {
+		return repo.findById(id);
+	}
+	
+	public MotorCycle saveProduct(MotorCycle cycle) {
+		return repo.save(cycle);
+	}
+	
+	public String updateImage(MultipartFile image) throws IOException {
+		
+		Path filePath = root.resolve(image.getOriginalFilename());
+		
+		// saved image file to upload folder
+		Files.copy(image.getInputStream(), filePath);
+		
+		return filePath.toString();
+	}
+	
+	// end of product services
 
 }

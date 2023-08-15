@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.ninja.upload.dto.MotorCycleDto;
+import com.ninja.upload.entity.MotorCycle;
 import com.ninja.upload.service.FileStorageService;
 
 @RestController
@@ -74,5 +76,40 @@ public class FileUploadController {
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + file.getFilename() + "\"").body(file);
 	}
+	
+	// Update product with form
+	@PutMapping("/{id}")
+	public ResponseEntity<MotorCycleDto> updateProduct(@PathVariable int id, @RequestParam("image") MultipartFile image, @RequestParam("name") String name, 
+			@RequestParam("description") String description, @RequestParam("price") double price) throws IOException {
+		
+		MotorCycle cycle = storageService.updateSingleProduct(id)
+				.orElseThrow(() -> new RuntimeException("Not found product with ID %".formatted(id)));
+		
+		cycle.setName(name);
+		cycle.setDescription(description);
+		cycle.setPrice(price);
+		cycle.setImage(storageService.updateImage(image));
+		
+		MotorCycle savedCycle = storageService.saveProduct(cycle);
+		
+		return new ResponseEntity<MotorCycleDto>(new MotorCycleDto(savedCycle) , HttpStatus.CREATED);
+	}
+	
+	/* update product with request body => JSON 
+	@PutMapping("/{id}")
+	public ResponseEntity<MotorCycleDto> updateProduct(@PathVariable int id, @RequestBody MotorCycleDto dto) {
+		
+		MotorCycle cycle = storageService.updateSingleProduct(id)
+				.orElseThrow(() -> new RuntimeException("Not found product with ID %".formatted(id)));
+		
+		cycle.setName(dto.getName());
+		cycle.setDescription(dto.getDescription());
+		cycle.setPrice(dto.getPrice());
+		
+		MotorCycle savedCycle = storageService.saveProduct(cycle);
+		
+		return new ResponseEntity<MotorCycleDto>(new MotorCycleDto(savedCycle) , HttpStatus.CREATED);
+	} 
+	*/
 
 }
