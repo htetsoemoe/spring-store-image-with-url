@@ -71,7 +71,7 @@ public class FileStorageService {
 	}
 	
 	// Update product services
-	public Optional<MotorCycle> updateSingleProduct(int id) {
+	public Optional<MotorCycle> getSingleProduct(int id) {
 		return repo.findById(id);
 	}
 	

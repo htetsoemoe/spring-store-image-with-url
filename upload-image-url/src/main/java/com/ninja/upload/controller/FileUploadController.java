@@ -82,7 +82,7 @@ public class FileUploadController {
 	public ResponseEntity<MotorCycleDto> updateProduct(@PathVariable int id, @RequestParam("image") MultipartFile image, @RequestParam("name") String name, 
 			@RequestParam("description") String description, @RequestParam("price") double price) throws IOException {
 		
-		MotorCycle cycle = storageService.updateSingleProduct(id)
+		MotorCycle cycle = storageService.getSingleProduct(id)
 				.orElseThrow(() -> new RuntimeException("Not found product with ID %".formatted(id)));
 		
 		cycle.setName(name);
