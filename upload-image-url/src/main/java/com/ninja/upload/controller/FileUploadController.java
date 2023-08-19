@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.ninja.upload.dto.MotorCycleDto;
 import com.ninja.upload.entity.MotorCycle;
+import com.ninja.upload.exception.ResourceNotFoundExceptio;
 import com.ninja.upload.service.FileStorageService;
 
 @RestController
@@ -34,6 +35,7 @@ public class FileUploadController {
 	@Autowired
 	private FileStorageService storageService;
 	
+	// Create product
 	@PostMapping
 	public ResponseEntity<?> uploadProductToFileSystem(@RequestParam("image") MultipartFile image, @RequestParam("name") String name, 
 			@RequestParam("description") String description, @RequestParam("price") double price) throws IOException {
@@ -43,6 +45,16 @@ public class FileUploadController {
 		return ResponseEntity.status(HttpStatus.OK).body(uploadedProduct);
 	}
 	
+	// Get specific product with id
+	@GetMapping("/{id}")
+	public ResponseEntity<MotorCycle> getProductById(@PathVariable int id) {
+		MotorCycle cycle = storageService.getProductWithId(id)
+				.orElseThrow(() -> new ResourceNotFoundExceptio("Not found product with ID %d".formatted(id)));
+		
+		return new ResponseEntity<MotorCycle>(cycle, HttpStatus.OK);
+	}
+	
+	// Get all product
 	@GetMapping
 	public ResponseEntity<List<MotorCycleDto>> getAllProduct() {
 		List<MotorCycleDto> cycles = storageService.getAllProduct().stream().map(cycle -> {
@@ -78,6 +90,7 @@ public class FileUploadController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + file.getFilename() + "\"").body(file);
 	}
 	
+	// Delete product with specific id
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpStatus> deleteProductById(@PathVariable int id) {
 		storageService.deleteByProductId(id);

@@ -26,6 +26,7 @@ public class FileStorageService {
 	
 	private Path root = Paths.get("uploads");
 	
+	// post new product
 	public String uploadProductToFileSystem(MultipartFile image, String name, String description, double price) throws IOException {
 		Path filePath = root.resolve(image.getOriginalFilename());
 		
@@ -48,9 +49,15 @@ public class FileStorageService {
 		return null;
 	}
 	
+	// get all products
 	public List<MotorCycle> getAllProduct() {
 		List<MotorCycle> cycles = repo.findAll();
 		return cycles;
+	}
+	
+	// get specific product with id
+	public Optional<MotorCycle> getProductWithId(int id) {
+		return repo.findById(id);
 	}
 	
 	public Resource load(String fileName) {
