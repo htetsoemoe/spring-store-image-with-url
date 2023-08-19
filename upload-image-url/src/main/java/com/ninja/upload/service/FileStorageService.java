@@ -90,5 +90,15 @@ public class FileStorageService {
 	}
 	
 	// end of product services
+	
+	// delete api
+	
+	public void deleteByProductId(int id) {
+		if (repo.existsById(id)) {
+			repo.deleteById(id);
+		}
+	}
+	
+	// end of delete api
 
 }
