@@ -112,7 +112,7 @@ public class FileUploadController {
 	}
 	
 	// Update product with form
-	@PutMapping("/{id}")
+	@PostMapping("/{id}")
 	public ResponseEntity<MotorCycleDto> updateProduct(@PathVariable int id, @RequestParam("image") Optional<MultipartFile> image, @RequestParam("name") String name, 
 			@RequestParam("description") String description, @RequestParam("price") double price) throws IOException {
 		
