@@ -14,7 +14,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ninja.upload.dto.MotorCycleDto;
 import com.ninja.upload.entity.MotorCycle;
 import com.ninja.upload.repo.MotorCycleRepo;
 
@@ -98,14 +97,12 @@ public class FileStorageService {
 	
 	// end of product services
 	
-	// delete api
-	
+	// delete
 	public void deleteByProductId(int id) {
 		if (repo.existsById(id)) {
 			repo.deleteById(id);
 		}
-	}
-	
-	// end of delete api
+	}	
+	// end of delete
 
 }

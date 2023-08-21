@@ -1,7 +1,9 @@
 package com.ninja.upload.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.ninja.upload.dto.MotorCycleDto;
 import com.ninja.upload.entity.MotorCycle;
-import com.ninja.upload.exception.ResourceNotFoundExceptio;
 import com.ninja.upload.service.FileStorageService;
 
 @RestController
@@ -47,11 +48,24 @@ public class FileUploadController {
 	
 	// Get specific product with id
 	@GetMapping("/{id}")
-	public ResponseEntity<MotorCycle> getProductById(@PathVariable int id) {
-		MotorCycle cycle = storageService.getProductWithId(id)
-				.orElseThrow(() -> new ResourceNotFoundExceptio("Not found product with ID %d".formatted(id)));
+	public ResponseEntity<MotorCycleDto> getProductById(@PathVariable int id) throws FileNotFoundException {
 		
-		return new ResponseEntity<MotorCycle>(cycle, HttpStatus.OK);
+		MotorCycleDto foundCycle =  storageService.getProductWithId(id).map(cycle -> {		
+			String name = cycle.getName();
+			int cycleId = cycle.getId();
+			String description = cycle.getDescription();
+			double price = cycle.getPrice();
+			
+			String image = cycle.getImage();
+			String fileName = image.substring(8);
+			
+			String url = MvcUriComponentsBuilder.fromMethodName(FileUploadController.class, "getFile", fileName).build().toString();
+			
+			return new MotorCycleDto(cycleId, name, price, url, description);
+			
+		}).orElseThrow(() -> new FileNotFoundException("Not found product with ID %".formatted(id)));
+		
+		return ResponseEntity.status(HttpStatus.OK).body(foundCycle);	
 	}
 	
 	// Get all product
@@ -99,7 +113,7 @@ public class FileUploadController {
 	
 	// Update product with form
 	@PutMapping("/{id}")
-	public ResponseEntity<MotorCycleDto> updateProduct(@PathVariable int id, @RequestParam("image") MultipartFile image, @RequestParam("name") String name, 
+	public ResponseEntity<MotorCycleDto> updateProduct(@PathVariable int id, @RequestParam("image") Optional<MultipartFile> image, @RequestParam("name") String name, 
 			@RequestParam("description") String description, @RequestParam("price") double price) throws IOException {
 		
 		MotorCycle cycle = storageService.getSingleProduct(id)
@@ -108,7 +122,11 @@ public class FileUploadController {
 		cycle.setName(name);
 		cycle.setDescription(description);
 		cycle.setPrice(price);
-		cycle.setImage(storageService.updateImage(image));
+		
+		if (image.isPresent()) {
+			cycle.setImage(storageService.updateImage(image.get()));
+		}
+		
 		
 		MotorCycle savedCycle = storageService.saveProduct(cycle);
 		
